@@ -1,3 +1,5 @@
+import requests
+
 error_message = "This is a sample exception message from the mock"
 
 success_response_sample = {
@@ -44,7 +46,7 @@ def mocked_requests_get(*args, **kwargs):
     if kwargs["params"]["region"] == "US" and kwargs["params"]["symbol"] == "AMRN":
         return MockResponse(success_response_sample, 200, {"content-length": "3490"}, False, "")
     elif kwargs["params"]["symbol"] == "error":
-        return MockResponse({}, 500, {"content-length": "3490"}, True, error_message)
+        raise requests.exceptions.RequestException(error_message)
     elif kwargs["params"]["symbol"] == "****":
         return MockResponse({}, 200, {"content-length": "0"}, False, "")
     elif kwargs["params"]["symbol"] == "no_raw_price":
