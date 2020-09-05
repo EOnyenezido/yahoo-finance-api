@@ -5,7 +5,7 @@ A python API that connects to "Yahoo Finance API Pricing" and returns a given in
 
 #### To quickly run application
 1. pip install -r requirements.txt
-1. export FLASK_APP=yfinance.py
+1. export FLASK_APP=yfinance.py **(or set FLASK_APP=yfinance.py on Windows)**
 1. flask run **(localhost only)**
 1. flask run --host=0.0.0.0 **(externally visible server)**
 
@@ -15,6 +15,6 @@ A python API that connects to "Yahoo Finance API Pricing" and returns a given in
 
 #### To view test coverage
 1. pip install -r requirements.txt
-1. coverage run tests/test_yfinance.py
+1. python -m coverage run tests/test_yfinance.py
 1. coverage report yfinance.py **(command line report)**
 1. coverage html yfinance.py **(view report as html page)**
