@@ -29,7 +29,11 @@ def mocked_requests_get(*args, **kwargs):
     
     if kwargs["params"]["region"] == "US" and kwargs["params"]["symbol"] == "AMRN":
         return MockResponse({"success": True}, 200, {"content-length": "3490"}, False, "")
-    elif kwargs["params"]["symbol"] == 'error':
+    elif kwargs["params"]["symbol"] == "error":
         return MockResponse({}, 500, {"content-length": "3490"}, True, error_message)
+    elif kwargs["params"]["symbol"] == "****":
+        return MockResponse({}, 200, {"content-length": "0"}, False, "")
+    elif kwargs["params"]["symbol"] == "no_raw_price":
+        return MockResponse({}, 200, {"content-length": "3490"}, False, "")
 
     return MockResponse({}, 404, {"content-length": "0"}, False, "")
