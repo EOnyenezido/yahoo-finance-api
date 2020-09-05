@@ -125,3 +125,26 @@ class TestYFinance(unittest.TestCase):
         body = rv.get_json()
         self.assertEqual(body["success"], False)
         self.assertEqual(body["message"], "Retrieving price from API failed. Please retry")
+
+    @patch('yfinance.requests.get', side_effect=mocked_requests_get)
+    def test_yahoo_finance_api_success_response(self, mock_get):
+        """
+        GIVEN yahoo finance returns a successful response with required information
+        THEN should return 200 with all the required information
+        """
+        rv = self.client.get("/stock/v1/get-price?region=US&symbol=AMRN") # mock no raw price endpoint
+        self.assertTrue(rv.is_json)
+        self.assertEqual(rv.status_code, 200)
+        body = rv.get_json()
+        self.assertEqual(body["success"], True)
+        self.assertEqual(body["message"], "Price obtained successfully")
+        expected_response = {
+            "currency": "USD", 
+            "currencySymbol": "$", 
+            "exchangeName": "NasdaqGM", 
+            "fmt": "4.3000", 
+            "name": "Amarin Corporation plc", 
+            "raw": 4.3, 
+            "regularMarketTime": 1599249601
+        }
+        self.assertEqual(body["price"], expected_response)
