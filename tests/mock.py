@@ -1,5 +1,19 @@
 error_message = "This is a sample exception message from the mock"
 
+success_response_sample = {
+    "price": {
+        "currency": "USD", 
+        "currencySymbol": "$", 
+        "exchangeName": "NasdaqGM",
+        "regularMarketPrice": { 
+            "raw": 4.3, 
+            "fmt": "4.3000",
+        }, 
+        "longName": "Amarin Corporation plc",
+        "regularMarketTime": 1599249601
+  }
+}
+
 def mocked_requests_get(*args, **kwargs):
     class MockResponse:
         def __init__(self, json_data, status_code, headers, error, error_message):
@@ -28,7 +42,7 @@ def mocked_requests_get(*args, **kwargs):
             pass
     
     if kwargs["params"]["region"] == "US" and kwargs["params"]["symbol"] == "AMRN":
-        return MockResponse({"success": True}, 200, {"content-length": "3490"}, False, "")
+        return MockResponse(success_response_sample, 200, {"content-length": "3490"}, False, "")
     elif kwargs["params"]["symbol"] == "error":
         return MockResponse({}, 500, {"content-length": "3490"}, True, error_message)
     elif kwargs["params"]["symbol"] == "****":
