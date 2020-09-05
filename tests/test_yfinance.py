@@ -1,4 +1,6 @@
 import unittest
+from unittest.mock import patch
+from tests.mock import mocked_requests_get # pylint: disable=F0401
 
 from yfinance import app # pylint: disable=F0401
 from config import supportedRegions # pylint: disable=F0401
@@ -7,7 +9,8 @@ class TestYFinance(unittest.TestCase):
     def setUp(self):
         self.client = app.test_client()
 
-    def test_response_is_always_json(self):
+    @patch('yfinance.requests.get', side_effect=mocked_requests_get)
+    def test_response_is_always_json(self, mock_get):
         """
         GIVEN any url
         WHEN a request is mad
@@ -80,3 +83,18 @@ class TestYFinance(unittest.TestCase):
         body = rv.get_json()
         self.assertEqual(body["success"], False)
         self.assertEqual("Please pass instrument symbol", body["message"])
+
+    @patch('yfinance.requests.get', side_effect=mocked_requests_get)
+    def test_yahoo_finance_api_connection_error(self, mock_get):
+        """
+        GIVEN app is unable to connect to Yahoo Finance API
+        WHEN a request is made
+        THEN should return 500 error with an error message
+        """
+        rv = self.client.get("/stock/v1/get-price?region=US&symbol=error") # mock error endpoint
+        self.assertTrue(rv.is_json)
+        self.assertEqual(rv.status_code, 500)
+        body = rv.get_json()
+        self.assertEqual(body["success"], False)
+        self.assertEqual(body["message"], "An error occurred while connecting to the API. See 'error_message' for reason")
+        self.assertEqual(body["error_message"], "This is a sample exception message from the mock")
