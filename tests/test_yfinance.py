@@ -148,3 +148,6 @@ class TestYFinance(unittest.TestCase):
             "regularMarketTime": 1599249601
         }
         self.assertEqual(body["price"], expected_response)
+
+if __name__ == '__main__':
+    unittest.main()
