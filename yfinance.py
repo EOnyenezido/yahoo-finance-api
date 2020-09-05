@@ -11,6 +11,12 @@ def get_price():
             "success": False,
             "message": "Unsupported region. Please specify one of " + ",".join(supportedRegions)
         }, 400
+    symbol = request.args.get('symbol', '')
+    if symbol == "":
+        return {
+            "success": False,
+            "message": "Please pass instrument symbol"
+        }, 400
 
     return {} # return an empty JSON until integration with Yahoo Finance API
 
