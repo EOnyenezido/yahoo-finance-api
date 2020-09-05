@@ -98,3 +98,30 @@ class TestYFinance(unittest.TestCase):
         self.assertEqual(body["success"], False)
         self.assertEqual(body["message"], "An error occurred while connecting to the API. See 'error_message' for reason")
         self.assertEqual(body["error_message"], "This is a sample exception message from the mock")
+
+    @patch('yfinance.requests.get', side_effect=mocked_requests_get)
+    def test_yahoo_finance_api_empty_data_response(self, mock_get):
+        """
+        GIVEN yahoo finance returns a response with empty data
+        THEN should return 412 error with an error message
+        """
+        rv = self.client.get("/stock/v1/get-price?region=US&symbol=****") # mock empty data endpoint
+        self.assertTrue(rv.is_json)
+        self.assertEqual(rv.status_code, 412)
+        body = rv.get_json()
+        self.assertEqual(body["success"], False)
+        self.assertEqual(body["message"], "No data found. Please re-confirm instrument symbol")
+
+    @patch('yfinance.requests.get', side_effect=mocked_requests_get)
+    def test_yahoo_finance_api_no_raw_price_in_response(self, mock_get):
+        """
+        GIVEN yahoo finance returns a response without raw price
+        *** this is rare, but happens because the API has a 93% success rate
+        THEN should return 503 error with an error message
+        """
+        rv = self.client.get("/stock/v1/get-price?region=US&symbol=no_raw_price") # mock no raw price endpoint
+        self.assertTrue(rv.is_json)
+        self.assertEqual(rv.status_code, 503)
+        body = rv.get_json()
+        self.assertEqual(body["success"], False)
+        self.assertEqual(body["message"], "Retrieving price from API failed. Please retry")
