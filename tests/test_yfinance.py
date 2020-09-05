@@ -67,3 +67,16 @@ class TestYFinance(unittest.TestCase):
         body = rv.get_json()
         self.assertEqual(body["success"], False)
         self.assertEqual(body["message"], "Unsupported region. Please specify one of " + ",".join(supportedRegions))
+
+    def test_symbol_must_be_in_request_url(self):
+        """
+        GIVEN a url without an instrument symbol paramater
+        WHEN a request is made
+        THEN should return bad request error
+        """
+        rv = self.client.get("/stock/v1/get-price?region=US")
+        self.assertTrue(rv.is_json)
+        self.assertEqual(rv.status_code, 400)
+        body = rv.get_json()
+        self.assertEqual(body["success"], False)
+        self.assertEqual("Please pass instrument symbol", body["message"])
